@@ -6,47 +6,93 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 public class App {
 	public static void main(String[] args) {
 		System.out.println("Welcome To AddressBook");
-		// create database
-		createDB();
-		// create table
-		createTable();
-		// insert contact
-		insertContact("Nanesh", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234",
-				"rahul.deshmukh@example.com", "Profession");
-		insertContact("Rahul", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234",
-				"rahul.deshmukh@example.com", "Friends");
-		insertContact("Mahesh", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234",
-				"rahul.deshmukh@example.com", "Family");
-		// update contact
-		updateContactByName("Rahul", "Deshmukh", "48 Ganapati Nagar, New Building", "Pune", "Maharashtra", "411027",
-				"9856544321", "rahul.deshmukh@example.com","Friends");
-		// delete contact
-		deleteContactByName("Rahul", "Deshmukh");
-		// get contact by cityorstate
-		String state = "maharashtra";
-		System.out.println("----------get contact by cityorstate(" + state + ")------------");
-		getContactByCityOrState("maharashtra");
-		// get size of contact by city and state
-		String city = "pune";
-		String state1 = "maharashtra";
-		System.out.println("---------get size of contact by city and state(" + city + "" + state1 + ")----------");
-		int contactCount = getContactCountByCityAndState(city, state1);
-		System.out.println("Number of contacts in " + city + ", " + state + ": " + contactCount);
-		// sort conatct by name for city
-		String city1 = "pune";
-		getSortedContactsByNameForCity(city1);
-		//alter addressbook
-		addTypeColumnIfNotExists();
-		//get contact count by type
-		System.out.println("----------get contact count by type--------");
-		getContactCountByType("Profession");
-		//add contact in friends and family
-		System.out.println("--------add contact in friends and family--------");
-	    addContactToBothTypes("Rahul", "Deshmukh", "456 MG Road", "Hyderabad", "Telangana", "500001", "555-5678", "rahul.deshmukh@example.com");
+		Scanner scanner = new Scanner(System.in);
+		int choice = 0;
+
+        while (choice != 12) {
+            System.out.println("Select an operation:");
+            System.out.println("1. Create Database");
+            System.out.println("2. Create Table");
+            System.out.println("3. Insert Contacts");
+            System.out.println("4. Update Contact");
+            System.out.println("5. Delete Contact");
+            System.out.println("6. Get Contact by City or State");
+            System.out.println("7. Get Contact Count by City and State");
+            System.out.println("8. Sort Contacts by Name for City");
+            System.out.println("9. Alter Address Book");
+            System.out.println("10. Get Contact Count by Type");
+            System.out.println("11. Add Contact to Friends and Family");
+            System.out.println("12. Exit");
+
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    createDB();
+                    break;
+                case 2:
+                    createTable();
+                    break;
+                case 3:
+                    insertContact("Nanesh", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh@example.com", "Profession");
+                    insertContact("Rahul", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh12@example.com", "Friends");
+                    insertContact("Mahesh", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh@example.com", "Family");
+                    break;
+                case 4:
+                    updateContactByName("Rahul", "Deshmukh", "489 Ganapati Nagar, New Building", "Pune", "Maharashtra", "411027", "9856544321", "rahul.deshmukh@example.com", "Friends");
+                    break;
+                case 5:
+                    deleteContactByName("Rahul", "Deshmukh");
+                    break;
+                case 6:
+                    System.out.println("Enter state to get contacts:");
+                    scanner.nextLine();
+                    String state = scanner.nextLine();
+                    System.out.println("----------Get contact by city or state (" + state + ")------------");
+                    getContactByCityOrState(state);
+                    break;
+                case 7:
+                    System.out.println("Enter city and state to get contact count:");
+                    String city = scanner.nextLine();
+                    System.out.println("Enter state:");
+                    String state1 = scanner.nextLine();
+                    System.out.println("---------Get size of contact by city and state (" + city + ", " + state1 + ")----------");
+                    int contactCount = getContactCountByCityAndState(city, state1);
+                    System.out.println("Number of contacts in " + city + ", " + state1 + ": " + contactCount);
+                    break;
+                case 8:
+                    System.out.println("Enter city to sort contacts by name:");
+                    scanner.nextLine();
+                    String city1 = scanner.nextLine();
+                    getSortedContactsByNameForCity(city1);
+                    break;
+                case 9:
+                    addTypeColumnIfNotExists();
+                    break;
+                case 10:
+                    System.out.println("Enter type to get contact count:");
+                    scanner.nextLine();
+                    String type = scanner.nextLine();
+                    getContactCountByType(type);
+                    break;
+                case 11:
+                    System.out.println("Enter details to add contact in friends and family:");
+                    addContactToBothTypes("Rahul", "Deshmukh", "456 MG Road", "Hyderabad", "Telangana", "500001", "555-5678", "rahul.deshmukh@example.com");
+                    break;
+                case 12:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please enter a valid option.");
+                    break;
+            }
+        }
 	}
 
 	private static Connection getConnection(String database) throws SQLException, ClassNotFoundException {
@@ -62,7 +108,7 @@ public class App {
 		String tableQuery = "CREATE TABLE IF NOT EXISTS AddressBook (" + "id INT AUTO_INCREMENT PRIMARY KEY, "
 				+ "first_name VARCHAR(50) NOT NULL, " + "last_name VARCHAR(50) NOT NULL, " + "address VARCHAR(255), "
 				+ "city VARCHAR(50), " + "state VARCHAR(50), " + "zip VARCHAR(10), " + "phone_number VARCHAR(15), "
-				+ "email VARCHAR(100) UNIQUE" + ");";
+				+ "email VARCHAR(100)" + ");";
 		try (Connection con = getConnection("address_book"); Statement stmt = con.prepareStatement(tableQuery)) {
 
 			if (stmt.executeUpdate(tableQuery) == 1)
@@ -79,7 +125,7 @@ public class App {
 		try (Connection con = getConnection(""); Statement stmt = con.prepareStatement(dbQuery)) {
 
 			if (stmt.executeUpdate(dbQuery) == 1)
-				System.out.println("Table created successfully");
+				System.out.println("Database created successfully");
 
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -90,7 +136,8 @@ public class App {
 			String zip, String phoneNumber, String email, String type) {
 		String insertQuery = "INSERT INTO AddressBook (first_name, last_name, address, city, state, zip, phone_number, email, type) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		try (Connection con = getConnection("address_book"); PreparedStatement stmt = con.prepareStatement(insertQuery)) {
+		try (Connection con = getConnection("address_book");
+				PreparedStatement stmt = con.prepareStatement(insertQuery)) {
 			stmt.setString(1, firstName);
 			stmt.setString(2, lastName);
 			stmt.setString(3, address);
@@ -108,36 +155,32 @@ public class App {
 		}
 	}
 
-	private static void updateContactByName(String firstName, String lastName, String address, String city, 
-            String state, String zip, String phoneNumber, String email, String type) {
-String updateQuery = "UPDATE AddressBook SET first_name = ?, last_name = ?, address = ?, city = ?, "
-+ "state = ?, zip = ?, phone_number = ?, email = ?, type = ? WHERE first_name = ? AND last_name = ?";
-try (Connection con = getConnection("address_book"); 
-PreparedStatement stmt = con.prepareStatement(updateQuery)) {
+	private static void updateContactByName(String firstName, String lastName, String address, String city,
+			String state, String zip, String phone, String email, String type) {
+		String updateQuery = "UPDATE AddressBook SET address = ?, city = ?, state = ?, zip = ?, phone_number = ?, email = ?, type = ? WHERE first_name = ? AND last_name = ?";
+try (Connection con = getConnection("address_book");
+				PreparedStatement stmt = con.prepareStatement(updateQuery)) {
 
-stmt.setString(1, firstName);
-stmt.setString(2, lastName);
-stmt.setString(3, address);
-stmt.setString(4, city);
-stmt.setString(5, state);
-stmt.setString(6, zip);
-stmt.setString(7, phoneNumber);
-stmt.setString(8, email);
-stmt.setString(9, type);
-stmt.setString(10, firstName);
-stmt.setString(11, lastName);
+	stmt.setString(1, address);
+	stmt.setString(2, city);
+	stmt.setString(3, state);
+	stmt.setString(4, zip);
+	stmt.setString(5, phone);
+	stmt.setString(6, email);
+	stmt.setString(7, type);
+	stmt.setString(8, firstName);
+	stmt.setString(9, lastName);
 
-int rowsAffected = stmt.executeUpdate();
-if (rowsAffected > 0) {
-System.out.println("Contact updated successfully!");
-} else {
-System.out.println("No contact found to update.");
-}
-} catch (SQLException | ClassNotFoundException e) {
-e.printStackTrace();
-}
-}
-
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+				System.out.println("Contact updated successfully!");
+			} else {
+				System.out.println("No contact found to update.");
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private static void deleteContactByName(String firstName, String lastName) {
 		String deleteQuery = "DELETE FROM AddressBook WHERE first_name = ? AND last_name = ?";
@@ -252,111 +295,115 @@ e.printStackTrace();
 			e.printStackTrace();
 		}
 	}
+
 	private static void getContactsByNameAndType(String firstName, String lastName, String type) {
-	    String query = "SELECT first_name, last_name, address, city, state, zip, phone_number, email, type "
-	                 + "FROM AddressBook WHERE first_name = ? AND last_name = ? AND type = ?";
+		String query = "SELECT first_name, last_name, address, city, state, zip, phone_number, email, type "
+				+ "FROM AddressBook WHERE first_name = ? AND last_name = ? AND type = ?";
 
-	    try (Connection con = getConnection("address_book"); PreparedStatement stmt = con.prepareStatement(query)) {
-	        stmt.setString(1, firstName);
-	        stmt.setString(2, lastName);
-	        stmt.setString(3, type);
-	        ResultSet rs = stmt.executeQuery();
+		try (Connection con = getConnection("address_book"); PreparedStatement stmt = con.prepareStatement(query)) {
+			stmt.setString(1, firstName);
+			stmt.setString(2, lastName);
+			stmt.setString(3, type);
+			ResultSet rs = stmt.executeQuery();
 
-	        System.out.println("Contacts of " + firstName + " " + lastName + " in type " + type + ":");
-	        while (rs.next()) {
-	            String address = rs.getString("address");
-	            String city = rs.getString("city");
-	            String state = rs.getString("state");
-	            String zip = rs.getString("zip");
-	            String phoneNumber = rs.getString("phone_number");
-	            String email = rs.getString("email");
-	            String contactType = rs.getString("type");
+			System.out.println("Contacts of " + firstName + " " + lastName + " in type " + type + ":");
+			while (rs.next()) {
+				String address = rs.getString("address");
+				String city = rs.getString("city");
+				String state = rs.getString("state");
+				String zip = rs.getString("zip");
+				String phoneNumber = rs.getString("phone_number");
+				String email = rs.getString("email");
+				String contactType = rs.getString("type");
 
-	            System.out.println("Address: " + address);
-	            System.out.println("City: " + city);
-	            System.out.println("State: " + state);
-	            System.out.println("ZIP: " + zip);
-	            System.out.println("Phone: " + phoneNumber);
-	            System.out.println("Email: " + email);
-	            System.out.println("Address Book Type: " + contactType);
-	            System.out.println("-----------");
-	        }
-	    } catch (SQLException | ClassNotFoundException e) {
-	        e.printStackTrace();
-	    }
+				System.out.println("Address: " + address);
+				System.out.println("City: " + city);
+				System.out.println("State: " + state);
+				System.out.println("ZIP: " + zip);
+				System.out.println("Phone: " + phoneNumber);
+				System.out.println("Email: " + email);
+				System.out.println("Address Book Type: " + contactType);
+				System.out.println("-----------");
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
+
 	private static void addTypeColumnIfNotExists() {
-        String checkColumnQuery = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'AddressBook' AND COLUMN_NAME = 'type'";
+		String checkColumnQuery = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'AddressBook' AND COLUMN_NAME = 'type'";
 
-        try (Connection con = getConnection("address_book"); Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(checkColumnQuery)) {
+		try (Connection con = getConnection("address_book");
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(checkColumnQuery)) {
 
-            if (!rs.next()) { 
-                String alterTableQuery = "ALTER TABLE AddressBook ADD COLUMN type VARCHAR(50) NOT NULL";
-                stmt.executeUpdate(alterTableQuery);
-                System.out.println("Column 'type' added successfully!");
-            } else {
-                System.out.println("Column 'type' already exists.");
-            }
+			if (!rs.next()) {
+				String alterTableQuery = "ALTER TABLE AddressBook ADD COLUMN type VARCHAR(50) NOT NULL";
+				stmt.executeUpdate(alterTableQuery);
+				System.out.println("Column 'type' added successfully!");
+			} else {
+				System.out.println("Column 'type' already exists.");
+			}
 
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
+
 	private static void getContactCountByType(String type) {
-	    String query = "SELECT COUNT(*) FROM AddressBook WHERE type = ?";
-	    try (Connection con = getConnection("address_book"); 
-	         PreparedStatement stmt = con.prepareStatement(query)) {
+		String query = "SELECT COUNT(*) FROM AddressBook WHERE type = ?";
+		try (Connection con = getConnection("address_book"); PreparedStatement stmt = con.prepareStatement(query)) {
 
-	        stmt.setString(1, type);
-	        ResultSet rs = stmt.executeQuery();
-	        
-	        if (rs.next()) {
-	            int count = rs.getInt(1);
-	            System.out.println("Number of contacts in type '" + type + "': " + count);
-	        }
-	    } catch (SQLException | ClassNotFoundException e) {
-	        e.printStackTrace();
-	    }
+			stmt.setString(1, type);
+			ResultSet rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				int count = rs.getInt(1);
+				System.out.println("Number of contacts in type '" + type + "': " + count);
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private static void addContactToBothTypes(String firstName, String lastName, String address, String city, 
-            String state, String zip, String phoneNumber, String email) {
-String query1 = "INSERT INTO AddressBook (first_name, last_name, address, city, state, zip, phone_number, email, type) "
-+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-String query2 = "INSERT INTO AddressBook (first_name, last_name, address, city, state, zip, phone_number, email, type) "
-+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static void addContactToBothTypes(String firstName, String lastName, String address, String city,
+			String state, String zip, String phoneNumber, String email) {
+		String query1 = "INSERT INTO AddressBook (first_name, last_name, address, city, state, zip, phone_number, email, type) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String query2 = "INSERT INTO AddressBook (first_name, last_name, address, city, state, zip, phone_number, email, type) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-try (Connection con = getConnection("address_book"); 
-PreparedStatement stmt1 = con.prepareStatement(query1); 
-PreparedStatement stmt2 = con.prepareStatement(query2)) {
+		try (Connection con = getConnection("address_book");
+				PreparedStatement stmt1 = con.prepareStatement(query1);
+				PreparedStatement stmt2 = con.prepareStatement(query2)) {
 
-stmt1.setString(1, firstName);
-stmt1.setString(2, lastName);
-stmt1.setString(3, address);
-stmt1.setString(4, city);
-stmt1.setString(5, state);
-stmt1.setString(6, zip);
-stmt1.setString(7, phoneNumber);
-stmt1.setString(8, email);
-stmt1.setString(9, "Friend");
+			stmt1.setString(1, firstName);
+			stmt1.setString(2, lastName);
+			stmt1.setString(3, address);
+			stmt1.setString(4, city);
+			stmt1.setString(5, state);
+			stmt1.setString(6, zip);
+			stmt1.setString(7, phoneNumber);
+			stmt1.setString(8, email);
+			stmt1.setString(9, "Friend");
 
-stmt2.setString(1, firstName);
-stmt2.setString(2, lastName);
-stmt2.setString(3, address);
-stmt2.setString(4, city);
-stmt2.setString(5, state);
-stmt2.setString(6, zip);
-stmt2.setString(7, phoneNumber);
-stmt2.setString(8, email);
-stmt2.setString(9, "Family");
+			stmt2.setString(1, firstName);
+			stmt2.setString(2, lastName);
+			stmt2.setString(3, address);
+			stmt2.setString(4, city);
+			stmt2.setString(5, state);
+			stmt2.setString(6, zip);
+			stmt2.setString(7, phoneNumber);
+			stmt2.setString(8, email);
+			stmt2.setString(9, "Family");
 
-stmt1.executeUpdate();
-stmt2.executeUpdate();
+			stmt1.executeUpdate();
+			stmt2.executeUpdate();
 
-System.out.println("Contact added to both 'Friend' and 'Family' types.");
-} catch (SQLException | ClassNotFoundException e) {
-e.printStackTrace();
-}
-}
+			System.out.println("Contact added to both 'Friend' and 'Family' types.");
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
 }
