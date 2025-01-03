@@ -3,6 +3,7 @@ package main.java.com.demo;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -15,6 +16,9 @@ public class App {
 		createTable();
 		//insert contact
 		insertContact("Rahul", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh@example.com");
+		//update contact
+        updateContactByName("Rahul", "Deshmukh", "48 Ganapati Nagar, New Building", "Pune", "Maharashtra", "411027", "9856544321", "rahul.deshmukh@example.com");
+
 	}
 
 	private static Connection getConnection(String database) throws SQLException, ClassNotFoundException {
@@ -72,4 +76,37 @@ public class App {
             e.printStackTrace();
         }
     }
+	private static void updateContactByName(String firstName, String lastName, String address, String city, String state, String zip, String phoneNumber, String email) {
+	    String checkNameQuery = "SELECT id FROM AddressBook WHERE first_name = ? AND last_name = ?";
+	    try (Connection con = getConnection("address_book"); 
+	         PreparedStatement checkStmt = con.prepareStatement(checkNameQuery)) {
+	        checkStmt.setString(1, firstName);
+	        checkStmt.setString(2, lastName);
+	        ResultSet resultSet = checkStmt.executeQuery();
+
+	        if (resultSet.next()) {
+	            String updateQuery = "UPDATE AddressBook SET address = ?, city = ?, state = ?, zip = ?, phone_number = ?, email = ? WHERE first_name = ? AND last_name = ?";
+	            try (PreparedStatement updateStmt = con.prepareStatement(updateQuery)) {
+	                updateStmt.setString(1, address);
+	                updateStmt.setString(2, city);
+	                updateStmt.setString(3, state);
+	                updateStmt.setString(4, zip);
+	                updateStmt.setString(5, phoneNumber);
+	                updateStmt.setString(6, email);
+	                updateStmt.setString(7, firstName);
+	                updateStmt.setString(8, lastName);
+
+	                int rowsUpdated = updateStmt.executeUpdate();
+	                if (rowsUpdated > 0) {
+	                    System.out.println("Contact updated successfully!");
+	                }
+	            }
+	        } else {
+	            System.out.println("No contact found with this name. No updates made.");
+	        }
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	}
+
 }
