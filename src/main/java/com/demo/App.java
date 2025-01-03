@@ -41,6 +41,9 @@ public class App {
 		getSortedContactsByNameForCity(city1);
 		//alter addressbook
 		addTypeColumnIfNotExists();
+		//get contact count by type
+		System.out.println("----------get contact count by type--------");
+		getContactCountByType("Profession");
 	}
 
 	private static Connection getConnection(String database) throws SQLException, ClassNotFoundException {
@@ -296,4 +299,21 @@ e.printStackTrace();
             e.printStackTrace();
         }
 	}
+	private static void getContactCountByType(String type) {
+	    String query = "SELECT COUNT(*) FROM AddressBook WHERE type = ?";
+	    try (Connection con = getConnection("address_book"); 
+	         PreparedStatement stmt = con.prepareStatement(query)) {
+
+	        stmt.setString(1, type);
+	        ResultSet rs = stmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            int count = rs.getInt(1);
+	            System.out.println("Number of contacts in type '" + type + "': " + count);
+	        }
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	}
+
 }
