@@ -2,6 +2,7 @@ package main.java.com.demo;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -12,6 +13,8 @@ public class App {
 		 createDB();
 		// create table
 		createTable();
+		//insert contact
+		insertContact("Rahul", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh@example.com");
 	}
 
 	private static Connection getConnection(String database) throws SQLException, ClassNotFoundException {
@@ -49,4 +52,24 @@ public class App {
 			e.printStackTrace();
 		}
 	}
+	private static void insertContact(String firstName, String lastName, String address, String city, String state, String zip, String phoneNumber, String email) {
+        String insertQuery = "INSERT INTO AddressBook (first_name, last_name, address, city, state, zip, phone_number, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = getConnection("address_book"); PreparedStatement pstmt = con.prepareStatement(insertQuery)) {
+            pstmt.setString(1, firstName);
+            pstmt.setString(2, lastName);
+            pstmt.setString(3, address);
+            pstmt.setString(4, city);
+            pstmt.setString(5, state);
+            pstmt.setString(6, zip);
+            pstmt.setString(7, phoneNumber);
+            pstmt.setString(8, email);
+
+            int rowsInserted = pstmt.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("A new contact was inserted successfully!");
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }
