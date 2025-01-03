@@ -14,6 +14,15 @@ public class AppTest {
      */
     @Test
     public void shouldAnswerWithTrue() {
-        assertTrue(true);
+        
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            System.out.println("Driver loaded successfully!");
+            
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        
     }
+    
 }
