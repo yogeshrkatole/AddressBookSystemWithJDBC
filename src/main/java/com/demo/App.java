@@ -44,6 +44,9 @@ public class App {
 		//get contact count by type
 		System.out.println("----------get contact count by type--------");
 		getContactCountByType("Profession");
+		//add contact in friends and family
+		System.out.println("--------add contact in friends and family--------");
+	    addContactToBothTypes("Rahul", "Deshmukh", "456 MG Road", "Hyderabad", "Telangana", "500001", "555-5678", "rahul.deshmukh@example.com");
 	}
 
 	private static Connection getConnection(String database) throws SQLException, ClassNotFoundException {
@@ -315,5 +318,45 @@ e.printStackTrace();
 	        e.printStackTrace();
 	    }
 	}
+
+	private static void addContactToBothTypes(String firstName, String lastName, String address, String city, 
+            String state, String zip, String phoneNumber, String email) {
+String query1 = "INSERT INTO AddressBook (first_name, last_name, address, city, state, zip, phone_number, email, type) "
++ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+String query2 = "INSERT INTO AddressBook (first_name, last_name, address, city, state, zip, phone_number, email, type) "
++ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+try (Connection con = getConnection("address_book"); 
+PreparedStatement stmt1 = con.prepareStatement(query1); 
+PreparedStatement stmt2 = con.prepareStatement(query2)) {
+
+stmt1.setString(1, firstName);
+stmt1.setString(2, lastName);
+stmt1.setString(3, address);
+stmt1.setString(4, city);
+stmt1.setString(5, state);
+stmt1.setString(6, zip);
+stmt1.setString(7, phoneNumber);
+stmt1.setString(8, email);
+stmt1.setString(9, "Friend");
+
+stmt2.setString(1, firstName);
+stmt2.setString(2, lastName);
+stmt2.setString(3, address);
+stmt2.setString(4, city);
+stmt2.setString(5, state);
+stmt2.setString(6, zip);
+stmt2.setString(7, phoneNumber);
+stmt2.setString(8, email);
+stmt2.setString(9, "Family");
+
+stmt1.executeUpdate();
+stmt2.executeUpdate();
+
+System.out.println("Contact added to both 'Friend' and 'Family' types.");
+} catch (SQLException | ClassNotFoundException e) {
+e.printStackTrace();
+}
+}
 
 }
