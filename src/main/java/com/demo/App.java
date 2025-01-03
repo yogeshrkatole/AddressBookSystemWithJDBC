@@ -15,11 +15,26 @@ public class App {
 		// create table
 		createTable();
 		//insert contact
+		insertContact("Nanesh", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh@example.com");
 		insertContact("Rahul", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh@example.com");
+		insertContact("Mahesh", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh@example.com");
 		//update contact
         updateContactByName("Rahul", "Deshmukh", "48 Ganapati Nagar, New Building", "Pune", "Maharashtra", "411027", "9856544321", "rahul.deshmukh@example.com");
         //delete contact
        deleteContactByName("Rahul", "Deshmukh");
+       //get contact by cityorstate
+       String state="maharashtra";
+       System.out.println("----------get contact by cityorstate("+state+")------------");
+       getContactByCityOrState("maharashtra");
+       //get size of contact by city and state
+       String city = "pune";
+       String state1 = "maharashtra";
+       System.out.println("---------get size of contact by city and state("+city+""+state1+")----------");
+       int contactCount = getContactCountByCityAndState(city, state1);
+       System.out.println("Number of contacts in " + city + ", " + state + ": " + contactCount);
+       //sort conatct by name for city
+       String city1 = "pune";
+       getSortedContactsByNameForCity(city1);
 	}
 
 	private static Connection getConnection(String database) throws SQLException, ClassNotFoundException {
@@ -127,6 +142,96 @@ public class App {
 	        e.printStackTrace();
 	    }
 	}
+	private static void getContactByCityOrState(String cityOrState) {
+	    String selectQuery = "SELECT * FROM AddressBook WHERE city = ? OR state = ?";
+	    
+	    try (Connection con = getConnection("address_book"); 
+	         PreparedStatement stmt = con.prepareStatement(selectQuery)) {
+	        
+	        stmt.setString(1, cityOrState);
+	        stmt.setString(2, cityOrState);
+	        
+	        ResultSet rs = stmt.executeQuery();
+	        
+	        boolean found = false;
+	        while (rs.next()) {
+	            int id = rs.getInt("id");
+	            String firstName = rs.getString("first_name");
+	            String lastName = rs.getString("last_name");
+	            String address = rs.getString("address");
+	            String city = rs.getString("city");
+	            String state = rs.getString("state");
+	            String zip = rs.getString("zip");
+	            String phoneNumber = rs.getString("phone_number");
+	            String email = rs.getString("email");
+	            
+	            System.out.println("ID: " + id);
+	            System.out.println("Name: " + firstName + " " + lastName);
+	            System.out.println("Address: " + address);
+	            System.out.println("City: " + city);
+	            System.out.println("State: " + state);
+	            System.out.println("Zip: " + zip);
+	            System.out.println("Phone: " + phoneNumber);
+	            System.out.println("Email: " + email);
+	            System.out.println("-------------------------");
+	            found = true;
+	        }
+	        
+	        if (!found) {
+	            System.out.println("No contacts found for the city or state: " + cityOrState);
+	        }
+	        
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	}
+	private static int getContactCountByCityAndState(String city, String state) {
+        int count = 0;
+        String countQuery = "SELECT COUNT(*) FROM AddressBook WHERE city = ? AND state = ?";
+        
+        try (Connection con = getConnection("address_book"); PreparedStatement stmt = con.prepareStatement(countQuery)) {
+            stmt.setString(1, city);
+            stmt.setString(2, state);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                count = rs.getInt(1); 
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
 
-
+	private static void getSortedContactsByNameForCity(String city) {
+        String query = "SELECT first_name, last_name, address, city, state, zip, phone_number, email "
+                     + "FROM AddressBook WHERE city = ? ORDER BY first_name, last_name ASC";
+        
+        try (Connection con = getConnection("address_book"); PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, city);
+            ResultSet rs = stmt.executeQuery();
+            
+            System.out.println("---------Contacts in " + city + " sorted by name:--------");
+            while (rs.next()) {
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String address = rs.getString("address");
+                String state = rs.getString("state");
+                String zip = rs.getString("zip");
+                String phoneNumber = rs.getString("phone_number");
+                String email = rs.getString("email");
+                
+                System.out.println(firstName + " " + lastName);
+                System.out.println("Address: " + address);
+                System.out.println("City: " + city);
+                System.out.println("State: " + state);
+                System.out.println("ZIP: " + zip);
+                System.out.println("Phone: " + phoneNumber);
+                System.out.println("Email: " + email);
+                System.out.println("-----------");
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }
