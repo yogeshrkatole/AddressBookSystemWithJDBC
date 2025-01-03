@@ -18,7 +18,8 @@ public class App {
 		insertContact("Rahul", "Deshmukh", "45 Ganapati Nagar", "Pune", "Maharashtra", "411027", "9856541234", "rahul.deshmukh@example.com");
 		//update contact
         updateContactByName("Rahul", "Deshmukh", "48 Ganapati Nagar, New Building", "Pune", "Maharashtra", "411027", "9856544321", "rahul.deshmukh@example.com");
-
+        //delete contact
+       deleteContactByName("Rahul", "Deshmukh");
 	}
 
 	private static Connection getConnection(String database) throws SQLException, ClassNotFoundException {
@@ -108,5 +109,24 @@ public class App {
 	        e.printStackTrace();
 	    }
 	}
+	private static void deleteContactByName(String firstName, String lastName) {
+	    String deleteQuery = "DELETE FROM AddressBook WHERE first_name = ? AND last_name = ?";
+	    try (Connection con = getConnection("address_book"); 
+	         PreparedStatement stmt = con.prepareStatement(deleteQuery)) {
+	        
+	        stmt.setString(1, firstName);
+	        stmt.setString(2, lastName);
+	        
+	        int rowsDeleted = stmt.executeUpdate();
+	        if (rowsDeleted > 0) {
+	            System.out.println("Contact deleted successfully!");
+	        } else {
+	            System.out.println("No contact found with the given name.");
+	        }
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 }
